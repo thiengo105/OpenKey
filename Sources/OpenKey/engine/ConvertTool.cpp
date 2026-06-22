@@ -7,6 +7,7 @@
 //
 #include <locale>
 #include <codecvt>
+#include <algorithm>
 #include "ConvertTool.h"
 #include "Engine.h"
 #include <iostream>

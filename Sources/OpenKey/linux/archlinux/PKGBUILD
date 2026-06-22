@@ -1,0 +1,33 @@
+# Maintainer: Thien Ngo <ngo.thien@doltech.vn>
+#
+# Local build of the OpenKey Fcitx5 addon from the in-tree sources.
+# Run `makepkg -si` from this directory (Sources/OpenKey/linux/archlinux).
+#
+# For an AUR package you would instead fetch a fixed revision via
+#   source=("$pkgname-$pkgver.tar.gz::https://github.com/tuyenvm/OpenKey/archive/...")
+# and build $srcdir/OpenKey-*/Sources/OpenKey/linux .
+
+pkgname=fcitx5-openkey
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Vietnamese input method for Fcitx5 (OpenKey engine)"
+arch=('x86_64')
+url="https://github.com/tuyenvm/OpenKey"
+license=('GPL3')
+depends=('fcitx5')
+makedepends=('cmake')
+# The Fcitx5 input method that the addon provides.
+provides=()
+
+build() {
+    # The CMake project lives one directory up (Sources/OpenKey/linux); it pulls
+    # the platform-independent engine from ../../engine.
+    cmake -B "$srcdir/build" -S "$startdir/.." \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_BUILD_TYPE=Release
+    cmake --build "$srcdir/build"
+}
+
+package() {
+    DESTDIR="$pkgdir" cmake --install "$srcdir/build"
+}

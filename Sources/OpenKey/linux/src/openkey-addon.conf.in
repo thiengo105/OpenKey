@@ -1,0 +1,13 @@
+[Addon]
+Name=OpenKey
+Comment=Vietnamese input method (OpenKey engine)
+Category=InputMethod
+Version=@PROJECT_VERSION@
+Enabled=True
+Library=openkey
+Type=SharedLibrary
+OnDemand=True
+Configurable=True
+
+[Addon/Dependencies]
+0=core

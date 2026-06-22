@@ -87,6 +87,51 @@ $ brew upgrade --cask openkey
 OpenKey cần cấp quyền, vào *System Preferences -> Security & Privacy -> Accessibility*, kích hoạt `OpenKey.app`. **Không tắt nó khi đang dùng OpenKey**.
 ![Guide](https://raw.githubusercontent.com/tuyenvm/tuyenvm.github.io/master/images/openkey-guide.png "Accessibility").
 
+## OpenKey cho Linux (Fcitx5) — đang thử nghiệm 🧪
+
+> **Trạng thái:** Bản hỗ trợ Linux đang được phát triển dưới dạng **addon cho [Fcitx5](https://fcitx-im.org/)**, dùng lại engine gõ tiếng Việt sẵn có của OpenKey (`Sources/OpenKey/engine`). Tính năng đang trong giai đoạn **thử nghiệm để đảm bảo ổn định trước khi gửi Pull Request** về repo gốc `tuyenvm/OpenKey`. Rất hoan nghênh mọi đóng góp và phản hồi.
+
+Phù hợp nhất với môi trường KDE Plasma / Qt / Wayland (đã thử nghiệm trên Arch Linux + KDE Plasma + Wayland). Engine dùng chung với bản macOS/Windows nên cách gõ tương đương; phần Linux là một lớp "cầu nối" mỏng giữa Fcitx5 và engine, theo mô hình của `fcitx5-unikey`.
+
+### Kiểu gõ & tính năng (bản hiện tại)
+- Kiểu gõ: **Telex, VNI, Simple Telex 1/2**.
+- Tuỳ chọn: kiểm tra chính tả, đặt dấu kiểu mới (oà/uý), Quick Telex, cho phép Z F W J làm phụ âm, gõ tắt phụ âm đầu/cuối, viết hoa đầu câu, gạch chân preedit.
+- Mọi tuỳ chọn được tích hợp sẵn trong **Fcitx5 Configuration** (không cần GUI riêng).
+- Bảng mã: hiện hỗ trợ **Unicode** (phù hợp với mọi ứng dụng Linux hiện đại).
+
+### Yêu cầu (Arch Linux)
+```bash
+sudo pacman -S --needed fcitx5 fcitx5-configtool cmake base-devel
+# (tuỳ chọn) để gõ được trong ứng dụng GTK như Firefox:
+sudo pacman -S --needed fcitx5-gtk
+```
+Header và file CMake của Fcitx5 nằm sẵn trong gói `fcitx5` trên Arch (không cần gói `-dev` riêng).
+
+### Cài đặt (Arch — qua PKGBUILD, được pacman quản lý)
+```bash
+cd Sources/OpenKey/linux/archlinux
+makepkg -si
+fcitx5 -r        # nạp lại Fcitx5
+```
+Để build thủ công bằng CMake, xem chi tiết tại [`Sources/OpenKey/linux/README.md`](Sources/OpenKey/linux/README.md).
+
+### Kích hoạt (KDE Plasma / Wayland)
+1. *System Settings → Input & Output → Virtual Keyboard* → chọn **Fcitx 5** (trên Wayland, KWin sẽ khởi chạy bộ gõ). Có thể cần **đăng xuất/đăng nhập lại** một lần.
+2. Mở **fcitx5-configtool**, thêm **OpenKey** vào danh sách bộ gõ đang dùng (mục tiếng Việt / `vi`).
+3. Chuyển bộ gõ bằng phím tắt của Fcitx5 (mặc định **Ctrl+Space**) rồi gõ thử: `tieengs vieejt` → `tiếng việt`.
+
+### Tính năng chưa hỗ trợ (dự kiến bổ sung)
+- Gõ tắt (**Macro**).
+- Công cụ **chuyển mã** và các bảng mã cũ (TCVN3, VNI-Windows, …) — hiện chỉ Unicode.
+- **Smart switch** theo ứng dụng (Fcitx5 đã có sẵn cơ chế nhớ bộ gõ theo ứng dụng).
+- GUI bảng điều khiển riêng (hiện dùng giao diện cấu hình của Fcitx5).
+
+### Ghi chú theo distro
+- Addon **chạy trên mọi distro có Fcitx5**, cả X11 lẫn Wayland (KWin, GNOME, Sway, Hyprland…). Tuy nhiên **phải build lại từ nguồn trên từng distro** (ABI của Fcitx5 và đường dẫn thư viện khác nhau) — không copy file `.so` sang máy khác.
+- **Build deps theo distro:** Arch → `fcitx5 cmake`; Fedora → `cmake gcc-c++ fcitx5-devel` (libdir là `/usr/lib64`, CMake tự xử lý); Debian/Ubuntu → `cmake g++ libfcitx5core-dev libfcitx5config-dev`.
+- CMake tự dò đúng đường dẫn cài đặt từ cấu hình của Fcitx5, không cần chỉnh tay.
+- Cách bật Fcitx5 khác nhau theo desktop (KDE: Virtual Keyboard; GNOME/khác: autostart + biến môi trường `GTK_IM_MODULE`/`QT_IM_MODULE`/`XMODIFIERS`) — đây là cấu hình của Fcitx5, không liên quan tới addon.
+
 ## Tác giả
 - Mai Vũ Tuyên.
 - Mọi góp ý, gửi cho mình qua maivutuyen.91@gmail.com  
